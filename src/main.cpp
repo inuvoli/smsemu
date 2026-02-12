@@ -1,27 +1,39 @@
-#include "SegaEmu.h"
+#include <loguru.hpp>
+#include "segaemu.h"
+#include "commandline.h"
 
-constexpr auto SCREEN_WIDTH = 1024;
-constexpr auto SCREEN_HEIGHT = 768;
+constexpr auto DEFAULT_SCREEN_WIDTH = 1024;
+constexpr auto DEFAULT_SCREEN_HEIGHT = 768;
 
 int main(int argc, char* argv[])
 {
+    //Parse command line parameters
+    if (!commandline::parse(argc, argv))
+        return 0;   
+
+    //Init Log Library
+    loguru::init(argc, argv);
+    loguru::g_stderr_verbosity = loguru::Verbosity_INFO;
+    loguru::add_file("debug.log", loguru::Truncate, 2);
+    
+    //Init Emulator Object
     SegaEmu emu;
 
     //Init SDL Platform
-    if (!emu.InitSystem(SCREEN_WIDTH, SCREEN_HEIGHT))
+    if (!emu.InitSystem(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT))
     {
-        printf("Failed to Initialize SDL!\n");
+		LOG_F(ERROR, "Failed to Initialize SDL!");
         return 0;
     }
 
     //Init Emulator
-    if (!emu.InitEmulator(SEGAMASTERSYSTEM, argv[1], atoi(argv[2])))
+    if (!emu.InitEmulator(ConsolePlatform::MASTERSYSTEM))
     {
-        printf("Failed to Initialize Emulator!\n");
+		LOG_F(ERROR, "Failed to Initialize Emulator!");
         return 0;
     }
-    
-    while (emu.m_bRunning)
+
+    while (emu.isRunning)
     {
         //Manage SDL Events
         emu.HandleEvents();

@@ -1,43 +1,41 @@
 # Set the minimum version of CMake that can be used
 # To find the cmake version run
 # $ cmake --version
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.31)
 
 # Set the project name
-project (smsemu VERSION 0.1)
+project (smsemu VERSION 0.2)
 
 # Set variables
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/out)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
 
 # Search needed libraries
-find_package(SDL2 REQUIRED)
+find_package(SDL3 CONFIG REQUIRED)
+find_package(loguru CONFIG REQUIRED)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SMSEMU_SOURCES
-		src/Bios.cpp                                                             
-		src/BitplaneShifter.cpp                                                  
-		src/Cartridge.cpp                                                        
-		src/CircularBuffer.cpp                                                   
-		src/Controller.cpp                                                       
-		src/DebugConsole.cpp                                                     
-		src/filt.cpp                                                             
-		src/FrameBuffer.cpp                                                      
+		src/cpu/Z80A.cpp
+		src/memory/Bios.cpp                                                             
+		src/memory/Cartridge.cpp                                                        
+		src/memory/Mapper.cpp                                                           
+		src/memory/MapperCodemaster.cpp                                                 
+		src/memory/MapperSega.cpp                                                       
+		src/memory/MemoryManager.cpp                                                    
+		src/video/VDP.cpp
+		src/video/FrameBuffer.cpp
+		src/audio/ToneGen.cpp                                                          
+		src/audio/NoiseGen.cpp                                                         
+		src/audio/PSG.cpp                                                              
+		src/audio/filt.cpp                                                             
+		"src/controller/controller.cpp"                                                       
+		src/utils/BitplaneShifter.cpp                                                  
+		src/utils/CircularBuffer.cpp
+		src/utils/commandline.cpp
+		"src/debugger/debugconsole.cpp"                                                     
 		src/main.cpp                                                             
-		src/Mapper.cpp                                                           
-		src/MapperCodemaster.cpp                                                 
-		src/MapperSega.cpp                                                       
-		src/MemoryManager.cpp                                                    
-		src/NoiseGen.cpp                                                         
-		src/PSG.cpp                                                              
-		src/SegaEmu.cpp                                                          
-		src/SMS.cpp                                                              
-		src/ToneGen.cpp                                                          
-		src/VDP.cpp                                                              
-		src/Z80A.cpp  
+		"src/segasmu.cpp"                                                          
+		"src/sms.cpp"                                                                
 )
 
 # Add an executable with the above sources
@@ -47,9 +45,20 @@ add_executable(smsemu ${SMSEMU_SOURCES})
 # when running g++ these will be included as -I/directory/path/
 target_include_directories(smsemu
     PRIVATE 
-        ${PROJECT_SOURCE_DIR}/include
-		${SDL2_INCLUDE_DIRS}
+        ${PROJECT_SOURCE_DIR}/src/audio
+		${PROJECT_SOURCE_DIR}/src/controller
+		${PROJECT_SOURCE_DIR}/src/cpu 
+		${PROJECT_SOURCE_DIR}/src/debugger
+		${PROJECT_SOURCE_DIR}/src/memory
+		${PROJECT_SOURCE_DIR}/src/utils
+		${PROJECT_SOURCE_DIR}/src/video
+		${PROJECT_SOURCE_DIR}/src
+		${SDL3_INCLUDE_DIRS}
+		${LOGURU_INCLUDE_DIRS}
 )
 
 # Set libraries to be included
-target_link_libraries(smsemu ${SDL2_LIBRARIES})
+target_link_libraries(smsemu
+	PRIVATE
+		SDL3::SDL3
+		loguru::loguru)

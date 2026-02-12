@@ -1,30 +1,6 @@
-#include "SMS.h"
+#include "sms.h"
 
-SMS::SMS()
-{
-	//Start with no Cartridge inserted, run from BIOS
-	bCartInserted = false;
-
-	//Init MasterClock
-	masterclock_cycles = 0;
-
-	//Connect to CPU
-	cpu.ConnectBus(this);
-
-	//Connect to VDP
-	vdp.ConnectBus(this);
-	
-	//Connect to PSG
-	psg.ConnectBus(this);
-	
-	//Connect to Controller
-	cnt.ConnectBus(this);
-
-	//Connect to Controller
-	dbg.ConnectBus(this);
-}
-
-SMS::SMS(const std::string& sFileName, uint8_t nMapper, int nRegion)
+SMS::SMS(ConsoleRegion region, ConsoleMapper mapper, std::string filename)
 {
 	//Start with no Cartridge inserted, run from BIOS
 	bCartInserted = false;
@@ -52,11 +28,11 @@ SMS::SMS(const std::string& sFileName, uint8_t nMapper, int nRegion)
 	//LoadBios();
 
 	//Load Cartridge ROM
-	cart = std::make_shared<Cartridge>(sFileName, nMapper);
+	cart = std::make_shared<Cartridge>(filename, mapper);
 	InsertCartridge();
 
 	//Set Sega Master System Region
-	SetRegion(nRegion);
+	SetRegion(region);
 
 	//Disassemble code
 	mapAsm = cpu.disassemble(0x0000, 0xbfff);
@@ -67,25 +43,29 @@ SMS::~SMS ()
 
 }
 
-bool SMS::SetRegion(const int nReg)
+bool SMS::SetRegion(ConsoleRegion region)
 {
+	
+	//Set Controller Region
+	cnt.SetRegion(region);
+
 	//Set VDP Region Configuration
-	switch (nReg)
+	switch(region)
 	{
-	case JP: //JAPAN
-		vdp.SetVideoStandard(VDP::NTSC);
-		break;		
-	case US: //USA
-		vdp.SetVideoStandard(VDP::NTSC);
-		break;		
-	case UE: //EUROPE
-		vdp.SetVideoStandard(VDP::PAL);
-		break;			
+		case ConsoleRegion::JP:
+			vdp.SetVideoStandard(VDP::NTSC);
+			frameDuration = 1.0f / 60.0f;
+			break;
+		case ConsoleRegion::US:
+			vdp.SetVideoStandard(VDP::NTSC);
+			frameDuration = 1.0f / 60.0f;
+			break;
+		case ConsoleRegion::EU:
+			vdp.SetVideoStandard(VDP::PAL);
+			frameDuration = 1.0f / 50.0f;	
+			break;
 	}
-
-	//Set Controller Region Configuration
-	cnt.SetRegion(nReg);
-
+	
 	return true;
 }
 uint8_t SMS::readMem(uint16_t addr)
@@ -189,11 +169,11 @@ uint8_t SMS::readIO(uint8_t addr)
 		vdp.read(mirror_addr, data);
 		break;
 	case 0xc0:
-		//Joystick Port - All Mirror of 0xde
+		//Joystick Port - All Mirror of 0xdc
 		cnt.read(mirror_addr, data);
 		break;
 	case 0xc1:
-		//Joystick Port - All Mirror of 0xdf
+		//Joystick Port - All Mirror of 0xdd
 		cnt.read(mirror_addr, data);
 		break;
 	}
