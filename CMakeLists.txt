@@ -15,27 +15,27 @@ find_package(loguru CONFIG REQUIRED)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SMSEMU_SOURCES
-		src/cpu/Z80A.cpp
-		src/memory/Bios.cpp                                                             
-		src/memory/Cartridge.cpp                                                        
-		src/memory/Mapper.cpp                                                           
-		src/memory/MapperCodemaster.cpp                                                 
-		src/memory/MapperSega.cpp                                                       
-		src/memory/MemoryManager.cpp                                                    
-		src/video/VDP.cpp
-		src/video/FrameBuffer.cpp
-		src/audio/ToneGen.cpp                                                          
-		src/audio/NoiseGen.cpp                                                         
-		src/audio/PSG.cpp                                                              
+		src/cpu/z80a.cpp
+		src/memory/bios.cpp                                                             
+		src/memory/cartridge.cpp                                                        
+		src/memory/mapper.cpp                                                           
+		src/memory/mappercodemaster.cpp                                                 
+		src/memory/mappersega.cpp                                                       
+		src/memory/memorymanager.cpp                                                    
+		src/video/vdp.cpp
+		src/video/framebuffer.cpp
+		src/audio/tonegen.cpp                                                          
+		src/audio/noisegen.cpp                                                         
+		src/audio/psg.cpp                                                              
 		src/audio/filt.cpp                                                             
-		"src/controller/controller.cpp"                                                       
-		src/utils/BitplaneShifter.cpp                                                  
-		src/utils/CircularBuffer.cpp
+		src/controller/controller.cpp                                                       
+		src/utils/bitplaneshifter.cpp                                                  
+		src/utils/circularbuffer.cpp
 		src/utils/commandline.cpp
-		"src/debugger/debugconsole.cpp"                                                     
+		src/debugger/debugconsole.cpp                                                     
 		src/main.cpp                                                             
-		"src/segasmu.cpp"                                                          
-		"src/sms.cpp"                                                                
+		src/segasmu.cpp                                                          
+		src/sms.cpp                                               
 )
 
 # Add an executable with the above sources

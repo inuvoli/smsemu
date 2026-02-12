@@ -23,7 +23,7 @@ SMS::SMS(ConsoleRegion region, ConsoleMapper mapper, std::string filename)
 	//Connect to Controller
 	dbg.ConnectBus(this);
 
-	//Load Bios ROM
+	//Load Bios ROM into memory
 	//bios = std::make_shared<Bios>("./ROM/bios13fx.bin");
 	//LoadBios();
 

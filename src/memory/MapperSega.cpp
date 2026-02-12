@@ -8,7 +8,7 @@ MapperSega::MapperSega(uint8_t* cROM, uint8_t* cRAM)
 	pROM = cROM;
 	pRAM = cRAM;
 
-	//Reset Mapper Control Registers
+	//Reset Mapper Control Registers to Default Values
 	mapper_control[0] = 0x00;	//FFFCh - Cartridge RAM Mapper Control
 	mapper_control[1] = 0x00;	//FFFDh - Mapper Slot 0 Control
 	mapper_control[2] = 0x01;	//FFFEh - Mapper Slot 1 Control
